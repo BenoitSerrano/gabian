@@ -169,8 +169,8 @@ function ReviewSession(props: { session: dailySessionType }) {
         setSessionNewWordIds(
             (ids) => new Set([...ids, ...replacementWords.map((word) => word.id)]),
         );
+        // Un mot déjà connu n'est pas un mot travaillé : la progression ne bouge pas.
         setQueue(nextQueue);
-        setDoneCount((count) => count + 1);
         displayAlert({
             variant: 'success',
             text: `Mot mis de côté, prochaine révision dans ${data.intervalDays} jours`,
