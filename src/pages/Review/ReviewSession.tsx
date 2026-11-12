@@ -17,8 +17,9 @@ import { api, useApiCall } from '../../lib/api';
 import { formatNextReview } from '../../lib/formatNextReview';
 import { QUERY_KEYS } from '../../lib/queryKeys';
 import { ROUTE_PATHS } from '../../routes/routePaths';
-import { answerResultType, dailySessionType } from '../../types';
-import { buildInitialQueue, queueItemType } from './buildInitialQueue';
+import { useAlert } from '../../lib/alert';
+import { answerResultType, dailySessionType, markWordAsKnownResultType } from '../../types';
+import { buildInitialQueue, queueItemType, replaceKnownNewWord } from './buildInitialQueue';
 
 function ReviewSession(props: { session: dailySessionType }) {
     const [queue, setQueue] = useState<queueItemType[]>(() => buildInitialQueue(props.session));
@@ -26,8 +27,18 @@ function ReviewSession(props: { session: dailySessionType }) {
     const [doneCount, setDoneCount] = useState(0);
     const [answer, setAnswer] = useState('');
     const [result, setResult] = useState<answerResultType | undefined>();
+    // Nouveaux mots déjà intégrés à la session, pour n'ajouter que les vrais remplaçants.
+    const [sessionNewWordIds, setSessionNewWordIds] = useState(
+        () => new Set(props.session.newWords.map((word) => word.id)),
+    );
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const { displayAlert } = useAlert();
+
+    const markWordAsKnownApiCall = useApiCall({
+        apiCall: api.markWordAsKnown,
+        onSuccess: (data, params) => handleWordMarkedAsKnown(params.wordId, data),
+    });
 
     const submitAnswerApiCall = useApiCall({
         apiCall: api.submitAnswer,
@@ -70,9 +81,29 @@ function ReviewSession(props: { session: dailySessionType }) {
                         <Typography variant="h2" component="p" color="text.secondary">
                             {current.word.translations.join(' · ')}
                         </Typography>
-                        <Button variant="contained" size="large" autoFocus onClick={goToNext}>
-                            C’est noté
-                        </Button>
+                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} width="100%">
+                            <Button
+                                fullWidth
+                                variant="outlined"
+                                size="large"
+                                loading={markWordAsKnownApiCall.isLoading}
+                                onClick={() =>
+                                    markWordAsKnownApiCall.perform({ wordId: current.word.id })
+                                }
+                            >
+                                Je connais déjà ce mot
+                            </Button>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                size="large"
+                                autoFocus
+                                disabled={markWordAsKnownApiCall.isLoading}
+                                onClick={goToNext}
+                            >
+                                C’est noté
+                            </Button>
+                        </Stack>
                     </Stack>
                 ) : (
                     <form onSubmit={handleSubmit}>
@@ -130,6 +161,23 @@ function ReviewSession(props: { session: dailySessionType }) {
             return;
         }
         submitAnswerApiCall.perform({ wordId: current.word.id, answer });
+    }
+
+    function handleWordMarkedAsKnown(wordId: string, data: markWordAsKnownResultType) {
+        const replacementWords = data.newWords.filter((word) => !sessionNewWordIds.has(word.id));
+        const nextQueue = replaceKnownNewWord(queue, wordId, replacementWords);
+        setSessionNewWordIds(
+            (ids) => new Set([...ids, ...replacementWords.map((word) => word.id)]),
+        );
+        setQueue(nextQueue);
+        setDoneCount((count) => count + 1);
+        displayAlert({
+            variant: 'success',
+            text: `Mot mis de côté, prochaine révision dans ${data.intervalDays} jours`,
+        });
+        if (nextQueue.length === 0) {
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dailySession });
+        }
     }
 
     function goToNext() {

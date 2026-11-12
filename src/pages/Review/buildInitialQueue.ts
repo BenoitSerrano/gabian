@@ -11,11 +11,42 @@ type queueItemType =
  */
 function buildInitialQueue(session: dailySessionType): queueItemType[] {
     return [
-        ...session.newWords.map((word) => ({ kind: 'discover' as const, word })),
+        ...session.newWords.map(toDiscoverItem),
         ...session.reviewWords.map((word) => ({ kind: 'quiz' as const, word, isNew: false })),
-        ...session.newWords.map((word) => ({ kind: 'quiz' as const, word, isNew: true })),
+        ...session.newWords.map(toNewWordQuizItem),
     ];
 }
 
-export { buildInitialQueue };
+/**
+ * Un nouveau mot marqué « déjà connu » sort de la session (découverte et interrogation),
+ * et ses remplaçants sont découverts tout de suite puis interrogés en fin de session.
+ */
+function replaceKnownNewWord(
+    queue: queueItemType[],
+    knownWordId: string,
+    replacementWords: newWordType[],
+): queueItemType[] {
+    const remaining = queue.filter((item) => item.word.id !== knownWordId);
+    const [discoverItems, otherItems] = partition(remaining, (item) => item.kind === 'discover');
+    return [
+        ...discoverItems,
+        ...replacementWords.map(toDiscoverItem),
+        ...otherItems,
+        ...replacementWords.map(toNewWordQuizItem),
+    ];
+}
+
+function toDiscoverItem(word: newWordType): queueItemType {
+    return { kind: 'discover', word };
+}
+
+function toNewWordQuizItem(word: newWordType): queueItemType {
+    return { kind: 'quiz', word, isNew: true };
+}
+
+function partition<T>(items: T[], predicate: (item: T) => boolean): [T[], T[]] {
+    return [items.filter(predicate), items.filter((item) => !predicate(item))];
+}
+
+export { buildInitialQueue, replaceKnownNewWord };
 export type { queueItemType };

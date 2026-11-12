@@ -17,4 +17,13 @@ type answerResultType = {
     dueDate: string;
 };
 
-export type { userType, reviewWordType, newWordType, dailySessionType, answerResultType };
+type markWordAsKnownResultType = { intervalDays: number; newWords: newWordType[] };
+
+export type {
+    userType,
+    reviewWordType,
+    newWordType,
+    dailySessionType,
+    answerResultType,
+    markWordAsKnownResultType,
+};
