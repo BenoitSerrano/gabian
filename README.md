@@ -15,14 +15,23 @@ Il tape la traduction française (casse, accents et article ignorés) :
 - **bonne réponse** → prochaine révision dans 1 jour, puis 3 jours, puis l'intervalle est multiplié par 2,5 (8, 20, 50…) ;
 - **mauvaise réponse** → l'intervalle est remis à zéro et le mot revient plus tard dans la même session.
 
-Le vocabulaire est dans `multi-usage-api/src/clients/gabian/data/german-french.csv`
-(`id,german,french`, plusieurs traductions acceptées séparées par `|`). Ne pas changer l'`id`
-d'un mot existant : la progression des utilisateurs y est rattachée.
+Le vocabulaire est dans la table Supabase `gabian_words` (modifiable depuis Supabase, pris en
+compte par l'API en moins d'une minute) :
+
+- `language_origin` / `language_target` : langue de l'utilisateur (`fr`) et langue apprise (`de`) ;
+- `term` : le mot dans la langue apprise, **sans article** pour les noms ;
+- `nature` : `noun`, `verb`, `adjective` ou `adverb` ;
+- `gender` : `masculine`, `feminine` ou `neuter` pour les noms (null sinon) ;
+- `translations` : `[{ "term": "chien", "gender": "masculine" }, ...]`.
+
+Pour un nom, l'article (der/die/das, le/la/l') est déduit du genre et **obligatoire** dans la
+réponse, dans les deux sens. Ne pas changer l'`id` d'un mot existant : la progression des
+utilisateurs y est rattachée.
 
 ## Mise en place
 
-1. Créer le projet Supabase `gabian-users` et exécuter
-   `multi-usage-api/src/clients/gabian/lib/supabase/schema.sql` dans le SQL Editor.
+1. Créer le projet Supabase `gabian-users` et exécuter dans le SQL Editor
+   `schema.sql` puis `words.sql` (dans `multi-usage-api/src/clients/gabian/lib/supabase/`).
 2. Dans le `.env` de multi-usage-api, renseigner `GABIAN_SUPABASE_URL` et
    `GABIAN_SUPABASE_SERVICE_ROLE_KEY` (clé `service_role`, jamais exposée au front).
 3. Ici : `cp .env.example .env.local` et ajuster `VITE_API_BASE_URL` au port de l'API.

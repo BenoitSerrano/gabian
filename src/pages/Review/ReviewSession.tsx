@@ -81,7 +81,7 @@ function ReviewSession(props: { session: dailySessionType }) {
                     <Stack spacing={6} alignItems="center" textAlign="center">
                         <Chip label="Nouveau mot" color="secondary" />
                         <Typography variant="h1" component="p" lang="de">
-                            {current.word.german}
+                            {current.word.term}
                         </Typography>
                         <Typography variant="h2" component="p" color="text.secondary">
                             {current.word.translations.join(' · ')}
@@ -133,7 +133,11 @@ function ReviewSession(props: { session: dailySessionType }) {
                                 autoFocus
                                 autoComplete="off"
                                 label={DIRECTION_LABELS[current.card.direction].inputLabel}
-                                helperText={DIRECTION_LABELS[current.card.direction].helperText}
+                                helperText={
+                                    current.card.nature === 'noun'
+                                        ? DIRECTION_LABELS[current.card.direction].nounHelperText
+                                        : undefined
+                                }
                                 value={answer}
                                 disabled={!!result}
                                 onChange={(e) => setAnswer(e.target.value)}
@@ -222,13 +226,17 @@ function ReviewSession(props: { session: dailySessionType }) {
 
 const DIRECTION_LABELS: Record<
     directionType,
-    { chip: string; inputLabel: string; helperText?: string }
+    { chip: string; inputLabel: string; nounHelperText: string }
 > = {
-    forward: { chip: 'Allemand → Français', inputLabel: 'Traduction en français' },
+    forward: {
+        chip: 'Allemand → Français',
+        inputLabel: 'Traduction en français',
+        nounHelperText: 'C’est un nom : précise l’article (le, la, l’)',
+    },
     reverse: {
         chip: 'Français → Allemand',
         inputLabel: 'Traduction en allemand',
-        helperText: 'Article facultatif, mais il doit être juste s’il est donné',
+        nounHelperText: 'C’est un nom : précise l’article (der, die, das)',
     },
 };
 
