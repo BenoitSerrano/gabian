@@ -32,8 +32,8 @@ function Home() {
         );
     }
 
-    const { reviewWords, newWords, stats } = sessionQuery.data;
-    const hasWorkToday = reviewWords.length + newWords.length > 0;
+    const { reviewCards, newWords, stats } = sessionQuery.data;
+    const hasWorkToday = reviewCards.length + newWords.length > 0;
     const progress = stats.totalWordCount
         ? (100 * stats.startedWordCount) / stats.totalWordCount
         : 0;
@@ -49,7 +49,7 @@ function Home() {
                     <Stack spacing={4}>
                         <Typography variant="h2">Aujourd’hui</Typography>
                         <Stack direction="row" spacing={8}>
-                            <Counter value={reviewWords.length} label="à réviser" />
+                            <Counter value={reviewCards.length} label="à réviser" />
                             <Counter value={newWords.length} label="nouveaux mots" />
                         </Stack>
                         {hasWorkToday ? (

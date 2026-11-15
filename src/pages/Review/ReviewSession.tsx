@@ -18,7 +18,12 @@ import { formatNextReview } from '../../lib/formatNextReview';
 import { QUERY_KEYS } from '../../lib/queryKeys';
 import { ROUTE_PATHS } from '../../routes/routePaths';
 import { useAlert } from '../../lib/alert';
-import { answerResultType, dailySessionType, markWordAsKnownResultType } from '../../types';
+import {
+    answerResultType,
+    dailySessionType,
+    directionType,
+    markWordAsKnownResultType,
+} from '../../types';
 import { buildInitialQueue, queueItemType, replaceKnownNewWord } from './buildInitialQueue';
 
 function ReviewSession(props: { session: dailySessionType }) {
@@ -108,16 +113,27 @@ function ReviewSession(props: { session: dailySessionType }) {
                 ) : (
                     <form onSubmit={handleSubmit}>
                         <Stack spacing={6} alignItems="center" textAlign="center">
-                            {current.isNew && <Chip label="Nouveau mot" color="secondary" />}
-                            <Typography variant="h1" component="p" lang="de">
-                                {current.word.german}
+                            <Stack direction="row" spacing={2}>
+                                {current.isNew && <Chip label="Nouveau mot" color="secondary" />}
+                                <Chip
+                                    variant="outlined"
+                                    label={DIRECTION_LABELS[current.card.direction].chip}
+                                />
+                            </Stack>
+                            <Typography
+                                variant="h1"
+                                component="p"
+                                lang={current.card.direction === 'forward' ? 'de' : 'fr'}
+                            >
+                                {current.card.prompt}
                             </Typography>
                             <TextField
-                                key={`${current.word.id}-${doneCount}`}
+                                key={`${current.card.wordId}-${current.card.direction}-${doneCount}`}
                                 fullWidth
                                 autoFocus
                                 autoComplete="off"
-                                label="Traduction en français"
+                                label={DIRECTION_LABELS[current.card.direction].inputLabel}
+                                helperText={DIRECTION_LABELS[current.card.direction].helperText}
                                 value={answer}
                                 disabled={!!result}
                                 onChange={(e) => setAnswer(e.target.value)}
@@ -127,7 +143,10 @@ function ReviewSession(props: { session: dailySessionType }) {
                             />
                             {result ? (
                                 <>
-                                    <AnswerFeedback result={result} />
+                                    <AnswerFeedback
+                                        result={result}
+                                        direction={current.card.direction}
+                                    />
                                     <Button
                                         variant="contained"
                                         size="large"
@@ -160,7 +179,11 @@ function ReviewSession(props: { session: dailySessionType }) {
         if (current?.kind !== 'quiz' || result || !answer.trim()) {
             return;
         }
-        submitAnswerApiCall.perform({ wordId: current.word.id, answer });
+        submitAnswerApiCall.perform({
+            wordId: current.card.wordId,
+            direction: current.card.direction,
+            answer,
+        });
     }
 
     function handleWordMarkedAsKnown(wordId: string, data: markWordAsKnownResultType) {
@@ -197,19 +220,33 @@ function ReviewSession(props: { session: dailySessionType }) {
     }
 }
 
-function AnswerFeedback(props: { result: answerResultType }) {
+const DIRECTION_LABELS: Record<
+    directionType,
+    { chip: string; inputLabel: string; helperText?: string }
+> = {
+    forward: { chip: 'Allemand → Français', inputLabel: 'Traduction en français' },
+    reverse: {
+        chip: 'Français → Allemand',
+        inputLabel: 'Traduction en allemand',
+        helperText: 'Article facultatif, mais il doit être juste s’il est donné',
+    },
+};
+
+function AnswerFeedback(props: { result: answerResultType; direction: directionType }) {
     const { result } = props;
+    const expectedAnswers = <strong>{result.expectedAnswers.join(' · ')}</strong>;
     if (result.isCorrect) {
         return (
             <Alert icon={<CheckCircleIcon />} severity="success" sx={{ width: '100%' }}>
-                Richtig ! {formatNextReview(result.intervalDays)}.
+                {/* En allemand, on rappelle la forme complète (avec l'article). */}
+                Richtig !{props.direction === 'reverse' && <> {expectedAnswers}.</>}{' '}
+                {formatNextReview(result.intervalDays)}.
             </Alert>
         );
     }
     return (
         <Alert icon={<CancelIcon />} severity="error" sx={{ width: '100%', textAlign: 'left' }}>
-            La bonne réponse était : <strong>{result.translations.join(' · ')}</strong>. Ce mot
-            reviendra plus tard dans la session.
+            La bonne réponse était : {expectedAnswers}. Ce mot reviendra plus tard dans la session.
         </Alert>
     );
 }

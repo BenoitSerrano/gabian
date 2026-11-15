@@ -1,6 +1,7 @@
 import {
     answerResultType,
     dailySessionType,
+    directionType,
     markWordAsKnownResultType,
     userType,
 } from '../../types';
@@ -24,7 +25,7 @@ async function getDailySession() {
     return performApiCall<dailySessionType>('session', 'GET');
 }
 
-async function submitAnswer(params: { wordId: string; answer: string }) {
+async function submitAnswer(params: { wordId: string; direction: directionType; answer: string }) {
     return performApiCall<answerResultType>('answers', 'POST', params);
 }
 

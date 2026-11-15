@@ -1,8 +1,8 @@
-import { dailySessionType, newWordType, reviewWordType } from '../../types';
+import { dailySessionType, newWordType, reviewCardType } from '../../types';
 
 type queueItemType =
     | { kind: 'discover'; word: newWordType }
-    | { kind: 'quiz'; word: reviewWordType; isNew: boolean };
+    | { kind: 'quiz'; card: reviewCardType; isNew: boolean };
 
 /**
  * Ordre de la session : on découvre d'abord les nouveaux mots (avec leur traduction),
@@ -12,7 +12,7 @@ type queueItemType =
 function buildInitialQueue(session: dailySessionType): queueItemType[] {
     return [
         ...session.newWords.map(toDiscoverItem),
-        ...session.reviewWords.map((word) => ({ kind: 'quiz' as const, word, isNew: false })),
+        ...session.reviewCards.map((card) => ({ kind: 'quiz' as const, card, isNew: false })),
         ...session.newWords.map(toNewWordQuizItem),
     ];
 }
@@ -26,7 +26,7 @@ function replaceKnownNewWord(
     knownWordId: string,
     replacementWords: newWordType[],
 ): queueItemType[] {
-    const remaining = queue.filter((item) => item.word.id !== knownWordId);
+    const remaining = queue.filter((item) => getWordId(item) !== knownWordId);
     const [discoverItems, otherItems] = partition(remaining, (item) => item.kind === 'discover');
     return [
         ...discoverItems,
@@ -40,8 +40,17 @@ function toDiscoverItem(word: newWordType): queueItemType {
     return { kind: 'discover', word };
 }
 
+/** Un nouveau mot est d'abord interrogé dans le sens allemand → français. */
 function toNewWordQuizItem(word: newWordType): queueItemType {
-    return { kind: 'quiz', word, isNew: true };
+    return {
+        kind: 'quiz',
+        card: { wordId: word.id, direction: 'forward', prompt: word.german },
+        isNew: true,
+    };
+}
+
+function getWordId(item: queueItemType) {
+    return item.kind === 'discover' ? item.word.id : item.card.wordId;
 }
 
 function partition<T>(items: T[], predicate: (item: T) => boolean): [T[], T[]] {
