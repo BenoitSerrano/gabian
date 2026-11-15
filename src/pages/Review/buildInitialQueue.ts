@@ -44,7 +44,14 @@ function toDiscoverItem(word: newWordType): queueItemType {
 function toNewWordQuizItem(word: newWordType): queueItemType {
     return {
         kind: 'quiz',
-        card: { wordId: word.id, direction: 'forward', nature: word.nature, prompt: word.term },
+        card: {
+            wordId: word.id,
+            direction: 'forward',
+            nature: word.nature,
+            register: word.register,
+            tags: word.tags,
+            prompt: word.term,
+        },
         isNew: true,
     };
 }

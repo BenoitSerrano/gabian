@@ -4,20 +4,23 @@ type userType = { id: string; username: string; email: string };
 type directionType = 'forward' | 'reverse';
 
 type natureType = 'noun' | 'verb' | 'adjective' | 'adverb';
+type registerType = 'familiar' | 'standard' | 'formal';
+
+/** Informations communes aux cartes et aux nouveaux mots. */
+type wordInfoType = { nature: natureType; register: registerType; tags: string[] };
 
 /**
  * Une carte à réviser : `prompt` est ce qu'on montre, la réponse est dans l'autre langue.
  * Pour un nom (`nature === 'noun'`), la réponse doit contenir l'article.
  */
-type reviewCardType = {
+type reviewCardType = wordInfoType & {
     wordId: string;
     direction: directionType;
-    nature: natureType;
     prompt: string;
 };
 
 /** Termes déjà formatés par l'API, avec leur article pour les noms ("der Hund", "le chien"). */
-type newWordType = { id: string; nature: natureType; term: string; translations: string[] };
+type newWordType = wordInfoType & { id: string; term: string; translations: string[] };
 
 type dailySessionType = {
     today: string;
@@ -39,6 +42,7 @@ export type {
     userType,
     directionType,
     natureType,
+    registerType,
     reviewCardType,
     newWordType,
     dailySessionType,

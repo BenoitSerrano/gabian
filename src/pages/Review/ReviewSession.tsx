@@ -23,6 +23,7 @@ import {
     dailySessionType,
     directionType,
     markWordAsKnownResultType,
+    registerType,
 } from '../../types';
 import { buildInitialQueue, queueItemType, replaceKnownNewWord } from './buildInitialQueue';
 
@@ -79,7 +80,10 @@ function ReviewSession(props: { session: dailySessionType }) {
             <Card sx={{ p: 8 }}>
                 {current.kind === 'discover' ? (
                     <Stack spacing={6} alignItems="center" textAlign="center">
-                        <Chip label="Nouveau mot" color="secondary" />
+                        <Stack direction="row" spacing={2}>
+                            <Chip label="Nouveau mot" color="secondary" />
+                            <RegisterChip register={current.word.register} />
+                        </Stack>
                         <Typography variant="h1" component="p" lang="de">
                             {current.word.term}
                         </Typography>
@@ -119,6 +123,7 @@ function ReviewSession(props: { session: dailySessionType }) {
                                     variant="outlined"
                                     label={DIRECTION_LABELS[current.card.direction].chip}
                                 />
+                                <RegisterChip register={current.card.register} />
                             </Stack>
                             <Typography
                                 variant="h1"
@@ -222,6 +227,20 @@ function ReviewSession(props: { session: dailySessionType }) {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dailySession });
         }
     }
+}
+
+/** Le registre courant est la norme : on ne signale que le familier et le soutenu. */
+function RegisterChip(props: { register: registerType }) {
+    if (props.register === 'standard') {
+        return null;
+    }
+    return (
+        <Chip
+            variant="outlined"
+            color={props.register === 'familiar' ? 'warning' : 'info'}
+            label={props.register === 'familiar' ? 'Familier' : 'Soutenu'}
+        />
+    );
 }
 
 const DIRECTION_LABELS: Record<
