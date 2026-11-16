@@ -1,4 +1,12 @@
-import { Button, Card, CircularProgress, LinearProgress, Stack, Typography } from '@mui/material';
+import {
+    Button,
+    Card,
+    Chip,
+    CircularProgress,
+    LinearProgress,
+    Stack,
+    Typography,
+} from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -6,14 +14,16 @@ import { Layout } from '../../components/Layout';
 import { api } from '../../lib/api';
 import { QUERY_KEYS } from '../../lib/queryKeys';
 import { ROUTE_PATHS } from '../../routes/routePaths';
+import { TAG_SEARCH_PARAM } from '../Review';
 
 function Home() {
     const navigate = useNavigate();
     const meQuery = useQuery({ queryKey: QUERY_KEYS.me, queryFn: api.getMe });
     const sessionQuery = useQuery({
-        queryKey: QUERY_KEYS.dailySession,
-        queryFn: api.getDailySession,
+        queryKey: QUERY_KEYS.dailySessionFor(),
+        queryFn: () => api.getDailySession(),
     });
+    const tagsQuery = useQuery({ queryKey: QUERY_KEYS.tags, queryFn: api.getTags });
 
     if (sessionQuery.isPending) {
         return (
@@ -70,18 +80,55 @@ function Home() {
                 </Card>
 
                 <Card sx={{ p: 6 }}>
+                    <Stack spacing={4}>
+                        <div>
+                            <Typography variant="h2">Réviser un thème</Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Les nouveaux mots viennent du thème choisi, des plus faciles aux
+                                plus difficiles.
+                            </Typography>
+                        </div>
+                        {tagsQuery.isPending ? (
+                            <CircularProgress size={24} />
+                        ) : tagsQuery.isError ? (
+                            <Typography color="error">Impossible de charger les thèmes.</Typography>
+                        ) : (
+                            <Stack direction="row" flexWrap="wrap" useFlexGap spacing={2}>
+                                {tagsQuery.data.map((tag) => (
+                                    <Chip
+                                        key={tag.id}
+                                        clickable
+                                        color="primary"
+                                        variant="outlined"
+                                        label={`${capitalize(tag.label)} · ${tag.wordCount}`}
+                                        onClick={() =>
+                                            navigate(
+                                                `${ROUTE_PATHS.REVIEW}?${TAG_SEARCH_PARAM}=${encodeURIComponent(tag.id)}`,
+                                            )
+                                        }
+                                    />
+                                ))}
+                            </Stack>
+                        )}
+                    </Stack>
+                </Card>
+
+                <Card sx={{ p: 6 }}>
                     <Stack spacing={2}>
                         <Typography variant="h3">Progression</Typography>
                         <LinearProgress variant="determinate" value={progress} />
                         <Typography variant="body2" color="text.secondary">
-                            {stats.startedWordCount} / {stats.totalWordCount} mots allemands
-                            découverts
+                            {stats.startedWordCount} / {stats.totalWordCount} mots découverts
                         </Typography>
                     </Stack>
                 </Card>
             </Stack>
         </Layout>
     );
+}
+
+function capitalize(value: string) {
+    return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function Counter(props: { value: number; label: string }) {

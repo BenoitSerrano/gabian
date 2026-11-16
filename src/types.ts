@@ -26,8 +26,13 @@ type reviewCardType = wordInfoType & {
 /** Termes déjà formatés par l'API, avec leur article pour les noms ("der Hund", "le chien"). */
 type newWordType = wordInfoType & { id: string; term: string; translations: string[] };
 
+/** Tag (catégorie de vocabulaire) avec son nombre total de mots. */
+type tagSummaryType = { id: string; label: string; wordCount: number };
+
 type dailySessionType = {
     today: string;
+    /** Tag de la session, ou null pour une session sur tout le vocabulaire. */
+    tag: { id: string; label: string } | null;
     /** Langue de l'utilisateur (celle des traductions) et langue qu'il apprend. */
     languages: { user: languageType; learned: languageType };
     reviewCards: reviewCardType[];
@@ -47,6 +52,7 @@ type markWordAsKnownResultType = { intervalDays: number; newWords: newWordType[]
 export type {
     userType,
     directionType,
+    tagSummaryType,
     natureType,
     levelType,
     languageType,

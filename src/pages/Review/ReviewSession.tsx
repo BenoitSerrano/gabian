@@ -59,7 +59,11 @@ function ReviewSession(props: { session: dailySessionType }) {
             <Card sx={{ p: 8, textAlign: 'center' }}>
                 <Stack spacing={4} alignItems="center">
                     <Typography variant="h1">Fertig ! 🎉</Typography>
-                    <Typography>C’est terminé pour aujourd’hui, à demain !</Typography>
+                    <Typography>
+                        {props.session.tag
+                            ? `C’est terminé pour « ${props.session.tag.label} » aujourd’hui !`
+                            : 'C’est terminé pour aujourd’hui, à demain !'}
+                    </Typography>
                     <Button variant="contained" onClick={() => navigate(ROUTE_PATHS.HOME)}>
                         Retour à l’accueil
                     </Button>
@@ -73,6 +77,11 @@ function ReviewSession(props: { session: dailySessionType }) {
 
     return (
         <Stack spacing={4}>
+            {props.session.tag && (
+                <Typography variant="h2" sx={{ '&::first-letter': { textTransform: 'uppercase' } }}>
+                    {props.session.tag.label}
+                </Typography>
+            )}
             <LinearProgress variant="determinate" value={progress} />
             <Typography variant="body2" color="text.secondary" align="right">
                 {queue.length} restant{queue.length > 1 ? 's' : ''}
@@ -102,7 +111,10 @@ function ReviewSession(props: { session: dailySessionType }) {
                                 size="large"
                                 loading={markWordAsKnownApiCall.isLoading}
                                 onClick={() =>
-                                    markWordAsKnownApiCall.perform({ wordId: current.word.id })
+                                    markWordAsKnownApiCall.perform({
+                                        wordId: current.word.id,
+                                        tagId: props.session.tag?.id,
+                                    })
                                 }
                             >
                                 Je connais déjà ce mot
@@ -213,6 +225,7 @@ function ReviewSession(props: { session: dailySessionType }) {
             wordId: current.card.wordId,
             direction: current.card.direction,
             answer,
+            tagId: props.session.tag?.id,
         });
     }
 

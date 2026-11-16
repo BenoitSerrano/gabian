@@ -4,11 +4,20 @@ import {
     directionType,
     languageType,
     markWordAsKnownResultType,
+    tagSummaryType,
     userType,
 } from '../../types';
 import { performApiCall } from './utils';
 
-const api = { createUser, login, getMe, getDailySession, submitAnswer, markWordAsKnown };
+const api = {
+    createUser,
+    login,
+    getMe,
+    getTags,
+    getDailySession,
+    submitAnswer,
+    markWordAsKnown,
+};
 
 async function createUser(params: {
     email: string;
@@ -27,18 +36,30 @@ async function getMe() {
     return performApiCall<userType>('me', 'GET');
 }
 
-async function getDailySession() {
-    return performApiCall<dailySessionType>('session', 'GET');
+async function getTags() {
+    return performApiCall<tagSummaryType[]>('tags', 'GET');
 }
 
-async function submitAnswer(params: { wordId: string; direction: directionType; answer: string }) {
+/** Session du jour, sur tout le vocabulaire ou sur un tag. */
+async function getDailySession(tagId?: string) {
+    const query = tagId ? `?tagId=${encodeURIComponent(tagId)}` : '';
+    return performApiCall<dailySessionType>(`session${query}`, 'GET');
+}
+
+async function submitAnswer(params: {
+    wordId: string;
+    direction: directionType;
+    answer: string;
+    tagId?: string;
+}) {
     return performApiCall<answerResultType>('answers', 'POST', params);
 }
 
-async function markWordAsKnown(params: { wordId: string }) {
+async function markWordAsKnown(params: { wordId: string; tagId?: string }) {
     return performApiCall<markWordAsKnownResultType>(
         `words/${encodeURIComponent(params.wordId)}/known`,
         'POST',
+        params.tagId ? { tagId: params.tagId } : {},
     );
 }
 

@@ -1,3 +1,3 @@
-import { Review } from './Review';
+import { Review, TAG_SEARCH_PARAM } from './Review';
 
-export { Review };
+export { Review, TAG_SEARCH_PARAM };
