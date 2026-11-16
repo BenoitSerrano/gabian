@@ -1,6 +1,9 @@
-type userType = { id: string; username: string; email: string };
+type userType = { id: string; username: string; email: string; language: languageType };
 
-/** forward : allemand → français ; reverse : français → allemand. */
+/** Langues de l'application (ISO 639-1). */
+type languageType = 'fr' | 'de';
+
+/** forward : langue apprise → langue de l'utilisateur ; reverse : l'inverse. */
 type directionType = 'forward' | 'reverse';
 
 type natureType = 'noun' | 'verb' | 'adjective' | 'adverb' | 'expression';
@@ -25,6 +28,8 @@ type newWordType = wordInfoType & { id: string; term: string; translations: stri
 
 type dailySessionType = {
     today: string;
+    /** Langue de l'utilisateur (celle des traductions) et langue qu'il apprend. */
+    languages: { user: languageType; learned: languageType };
     reviewCards: reviewCardType[];
     newWords: newWordType[];
     stats: { totalWordCount: number; startedWordCount: number };
@@ -44,6 +49,7 @@ export type {
     directionType,
     natureType,
     levelType,
+    languageType,
     reviewCardType,
     newWordType,
     dailySessionType,

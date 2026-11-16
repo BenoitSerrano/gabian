@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { TextField } from '@mui/material';
+import { MenuItem, TextField } from '@mui/material';
+import { LANGUAGES } from '../../lib/languages';
+import { languageType } from '../../types';
 import { useNavigate } from 'react-router-dom';
 import { api, useApiCall } from '../../lib/api';
 import { storage } from '../../lib/storage';
@@ -12,6 +14,7 @@ function SignUp() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [language, setLanguage] = useState<languageType>('fr');
     const navigate = useNavigate();
 
     const createUserApiCall = useApiCall({
@@ -30,7 +33,7 @@ function SignUp() {
             submitLabel="Créer mon compte"
             isLoading={createUserApiCall.isLoading}
             isSubmitDisabled={!username.trim() || !email || password.length < MIN_PASSWORD_LENGTH}
-            onSubmit={() => createUserApiCall.perform({ username, email, password })}
+            onSubmit={() => createUserApiCall.perform({ username, email, password, language })}
             footer={{
                 text: 'Déjà inscrit ?',
                 linkLabel: 'Se connecter',
@@ -63,6 +66,20 @@ function SignUp() {
                 helperText={`${MIN_PASSWORD_LENGTH} caractères minimum`}
                 onChange={(e) => setPassword(e.target.value)}
             />
+            <TextField
+                select
+                fullWidth
+                label="Ta langue"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as languageType)}
+                helperText="Celle dans laquelle tu lis les traductions"
+            >
+                {(Object.keys(LANGUAGES) as languageType[]).map((code) => (
+                    <MenuItem key={code} value={code}>
+                        {LANGUAGES[code].name}
+                    </MenuItem>
+                ))}
+            </TextField>
         </AuthenticationForm>
     );
 }

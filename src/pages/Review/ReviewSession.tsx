@@ -25,6 +25,7 @@ import {
     markWordAsKnownResultType,
     levelType,
 } from '../../types';
+import { getCardLabels, getCardLanguages } from '../../lib/languages';
 import { buildInitialQueue, queueItemType, replaceKnownNewWord } from './buildInitialQueue';
 
 function ReviewSession(props: { session: dailySessionType }) {
@@ -84,7 +85,11 @@ function ReviewSession(props: { session: dailySessionType }) {
                             <Chip label="Nouveau mot" color="secondary" />
                             <LevelChip level={current.word.level} />
                         </Stack>
-                        <Typography variant="h1" component="p" lang="de">
+                        <Typography
+                            variant="h1"
+                            component="p"
+                            lang={props.session.languages.learned}
+                        >
                             {current.word.term}
                         </Typography>
                         <Typography variant="h2" component="p" color="text.secondary">
@@ -121,14 +126,24 @@ function ReviewSession(props: { session: dailySessionType }) {
                                 {current.isNew && <Chip label="Nouveau mot" color="secondary" />}
                                 <Chip
                                     variant="outlined"
-                                    label={DIRECTION_LABELS[current.card.direction].chip}
+                                    label={
+                                        getCardLabels(
+                                            current.card.direction,
+                                            props.session.languages,
+                                        ).chip
+                                    }
                                 />
                                 <LevelChip level={current.card.level} />
                             </Stack>
                             <Typography
                                 variant="h1"
                                 component="p"
-                                lang={current.card.direction === 'forward' ? 'de' : 'fr'}
+                                lang={
+                                    getCardLanguages(
+                                        current.card.direction,
+                                        props.session.languages,
+                                    ).prompt
+                                }
                             >
                                 {current.card.prompt}
                             </Typography>
@@ -137,10 +152,16 @@ function ReviewSession(props: { session: dailySessionType }) {
                                 fullWidth
                                 autoFocus
                                 autoComplete="off"
-                                label={DIRECTION_LABELS[current.card.direction].inputLabel}
+                                label={
+                                    getCardLabels(current.card.direction, props.session.languages)
+                                        .inputLabel
+                                }
                                 helperText={
                                     current.card.nature === 'noun'
-                                        ? DIRECTION_LABELS[current.card.direction].nounHelperText
+                                        ? getCardLabels(
+                                              current.card.direction,
+                                              props.session.languages,
+                                          ).nounHelperText
                                         : undefined
                                 }
                                 value={answer}
@@ -234,22 +255,6 @@ const LEVEL_LABELS: Record<levelType, string> = { 1: 'Débutant', 2: 'Intermédi
 function LevelChip(props: { level: levelType }) {
     return <Chip variant="outlined" size="small" label={LEVEL_LABELS[props.level]} />;
 }
-
-const DIRECTION_LABELS: Record<
-    directionType,
-    { chip: string; inputLabel: string; nounHelperText: string }
-> = {
-    forward: {
-        chip: 'Allemand → Français',
-        inputLabel: 'Traduction en français',
-        nounHelperText: 'C’est un nom : précise l’article (le, la, l’)',
-    },
-    reverse: {
-        chip: 'Français → Allemand',
-        inputLabel: 'Traduction en allemand',
-        nounHelperText: 'C’est un nom : précise l’article (der, die, das)',
-    },
-};
 
 function AnswerFeedback(props: { result: answerResultType; direction: directionType }) {
     const { result } = props;

@@ -30,8 +30,12 @@ Le vocabulaire (30 catégories × 3 niveaux) est écrit à la main dans
 `multi-usage-api/scripts/gabian-vocabulary/themes/*.txt`, puis converti en SQL par
 `build_themes_sql.py`.
 
-Pour un nom, l'article (der/die/das, le/la/l') est déduit du genre et **obligatoire** dans la
-réponse, dans les deux sens. Ne pas changer l'`id` d'un mot existant : la progression des
+Pour un nom, l'article (der/die/das, le/la/l') est déduit du genre. Il est **obligatoire** quand
+on répond dans la langue apprise, **facultatif** quand on répond dans sa propre langue (mais un
+article faux est refusé).
+
+Chaque utilisateur a une langue (`gabian_users.language`, `fr` ou `de`, choisie à l'inscription) :
+c'est celle des traductions. Un francophone apprend l'allemand, un germanophone le français. Ne pas changer l'`id` d'un mot existant : la progression des
 utilisateurs y est rattachée.
 
 ## Mise en place

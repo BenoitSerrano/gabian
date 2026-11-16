@@ -2,6 +2,7 @@ import {
     answerResultType,
     dailySessionType,
     directionType,
+    languageType,
     markWordAsKnownResultType,
     userType,
 } from '../../types';
@@ -9,7 +10,12 @@ import { performApiCall } from './utils';
 
 const api = { createUser, login, getMe, getDailySession, submitAnswer, markWordAsKnown };
 
-async function createUser(params: { email: string; password: string; username: string }) {
+async function createUser(params: {
+    email: string;
+    password: string;
+    username: string;
+    language: languageType;
+}) {
     return performApiCall<{ token: string }>('users', 'POST', params);
 }
 
