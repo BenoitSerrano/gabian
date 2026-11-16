@@ -27,7 +27,7 @@ type reviewCardType = wordInfoType & {
 type newWordType = wordInfoType & { id: string; term: string; translations: string[] };
 
 /** Tag (catégorie de vocabulaire) avec son nombre total de mots. */
-type tagSummaryType = { id: string; label: string; wordCount: number };
+type tagSummaryType = { id: string; label: string; icon: string | null; wordCount: number };
 
 type dailySessionType = {
     today: string;

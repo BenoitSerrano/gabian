@@ -4,6 +4,8 @@ import { storage } from '../storage';
 const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL || 'https://multi-usage-api.onrender.com/api';
 const BASE_URL = `${API_BASE_URL}/gabian`;
+// Fichiers statiques servis par l'API (ex. icônes des tags : /img/tags/<fichier>).
+const ASSETS_BASE_URL = new URL(API_BASE_URL).origin;
 
 async function performApiCall<dataT>(
     uri: string,
@@ -37,4 +39,4 @@ async function performApiCall<dataT>(
     return response.json();
 }
 
-export { performApiCall };
+export { performApiCall, ASSETS_BASE_URL };

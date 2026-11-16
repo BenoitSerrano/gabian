@@ -1,16 +1,9 @@
-import {
-    Button,
-    Card,
-    Chip,
-    CircularProgress,
-    LinearProgress,
-    Stack,
-    Typography,
-} from '@mui/material';
+import { Button, Card, CircularProgress, LinearProgress, Stack, Typography } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '../../components/Layout';
+import { TagCard, TagGrid } from '../../components/TagCard';
 import { api } from '../../lib/api';
 import { QUERY_KEYS } from '../../lib/queryKeys';
 import { ROUTE_PATHS } from '../../routes/routePaths';
@@ -93,14 +86,11 @@ function Home() {
                         ) : tagsQuery.isError ? (
                             <Typography color="error">Impossible de charger les thèmes.</Typography>
                         ) : (
-                            <Stack direction="row" flexWrap="wrap" useFlexGap spacing={2}>
+                            <TagGrid>
                                 {tagsQuery.data.map((tag) => (
-                                    <Chip
+                                    <TagCard
                                         key={tag.id}
-                                        clickable
-                                        color="primary"
-                                        variant="outlined"
-                                        label={`${capitalize(tag.label)} · ${tag.wordCount}`}
+                                        tag={tag}
                                         onClick={() =>
                                             navigate(
                                                 `${ROUTE_PATHS.REVIEW}?${TAG_SEARCH_PARAM}=${encodeURIComponent(tag.id)}`,
@@ -108,7 +98,7 @@ function Home() {
                                         }
                                     />
                                 ))}
-                            </Stack>
+                            </TagGrid>
                         )}
                     </Stack>
                 </Card>
@@ -125,10 +115,6 @@ function Home() {
             </Stack>
         </Layout>
     );
-}
-
-function capitalize(value: string) {
-    return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function Counter(props: { value: number; label: string }) {
