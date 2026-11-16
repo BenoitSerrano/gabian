@@ -23,8 +23,10 @@ compte par l'API en moins d'une minute) :
 - `nature` : `noun`, `verb`, `adjective`, `adverb` ou `expression` (expression idiomatique) ;
 - `gender` : `masculine`, `feminine` ou `neuter` pour les noms (null sinon) ;
 - `translations` : `[{ "term": "chien", "gender": "masculine" }, ...]`.
-- `tags` : catégories de vocabulaire (`{nature et environnement}`) ;
 - `level` : niveau de difficulté, de 1 (débutant) à 3 (avancé).
+
+Les tags (catégories de vocabulaire, ex. « nature et environnement ») sont dans la table
+`gabian_tags` (`id`, `label`), reliée aux mots par `gabian_word_tags` (many-to-many).
 
 Le vocabulaire (30 catégories × 3 niveaux) est écrit à la main dans
 `multi-usage-api/scripts/gabian-vocabulary/themes/*.txt`, puis converti en SQL par
