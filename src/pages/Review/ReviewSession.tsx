@@ -23,7 +23,7 @@ import {
     dailySessionType,
     directionType,
     markWordAsKnownResultType,
-    registerType,
+    levelType,
 } from '../../types';
 import { buildInitialQueue, queueItemType, replaceKnownNewWord } from './buildInitialQueue';
 
@@ -82,7 +82,7 @@ function ReviewSession(props: { session: dailySessionType }) {
                     <Stack spacing={6} alignItems="center" textAlign="center">
                         <Stack direction="row" spacing={2}>
                             <Chip label="Nouveau mot" color="secondary" />
-                            <RegisterChip register={current.word.register} />
+                            <LevelChip level={current.word.level} />
                         </Stack>
                         <Typography variant="h1" component="p" lang="de">
                             {current.word.term}
@@ -123,7 +123,7 @@ function ReviewSession(props: { session: dailySessionType }) {
                                     variant="outlined"
                                     label={DIRECTION_LABELS[current.card.direction].chip}
                                 />
-                                <RegisterChip register={current.card.register} />
+                                <LevelChip level={current.card.level} />
                             </Stack>
                             <Typography
                                 variant="h1"
@@ -229,18 +229,10 @@ function ReviewSession(props: { session: dailySessionType }) {
     }
 }
 
-/** Le registre courant est la norme : on ne signale que le familier et le soutenu. */
-function RegisterChip(props: { register: registerType }) {
-    if (props.register === 'standard') {
-        return null;
-    }
-    return (
-        <Chip
-            variant="outlined"
-            color={props.register === 'familiar' ? 'warning' : 'info'}
-            label={props.register === 'familiar' ? 'Familier' : 'Soutenu'}
-        />
-    );
+const LEVEL_LABELS: Record<levelType, string> = { 1: 'Débutant', 2: 'Intermédiaire', 3: 'Avancé' };
+
+function LevelChip(props: { level: levelType }) {
+    return <Chip variant="outlined" size="small" label={LEVEL_LABELS[props.level]} />;
 }
 
 const DIRECTION_LABELS: Record<

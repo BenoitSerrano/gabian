@@ -48,7 +48,7 @@ function toNewWordQuizItem(word: newWordType): queueItemType {
             wordId: word.id,
             direction: 'forward',
             nature: word.nature,
-            register: word.register,
+            level: word.level,
             tags: word.tags,
             prompt: word.term,
         },

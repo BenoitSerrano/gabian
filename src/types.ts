@@ -3,11 +3,12 @@ type userType = { id: string; username: string; email: string };
 /** forward : allemand → français ; reverse : français → allemand. */
 type directionType = 'forward' | 'reverse';
 
-type natureType = 'noun' | 'verb' | 'adjective' | 'adverb';
-type registerType = 'familiar' | 'standard' | 'formal';
+type natureType = 'noun' | 'verb' | 'adjective' | 'adverb' | 'expression';
+/** Niveau de difficulté : 1 (débutant) à 3 (avancé). */
+type levelType = 1 | 2 | 3;
 
 /** Informations communes aux cartes et aux nouveaux mots. */
-type wordInfoType = { nature: natureType; register: registerType; tags: string[] };
+type wordInfoType = { nature: natureType; level: levelType; tags: string[] };
 
 /**
  * Une carte à réviser : `prompt` est ce qu'on montre, la réponse est dans l'autre langue.
@@ -42,7 +43,7 @@ export type {
     userType,
     directionType,
     natureType,
-    registerType,
+    levelType,
     reviewCardType,
     newWordType,
     dailySessionType,
