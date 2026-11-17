@@ -1,5 +1,6 @@
 import {
     answerResultType,
+    badgesType,
     dailySessionType,
     directionType,
     languageType,
@@ -17,6 +18,7 @@ const api = {
     getDailySession,
     submitAnswer,
     markWordAsKnown,
+    getBadges,
 };
 
 async function createUser(params: {
@@ -61,6 +63,11 @@ async function markWordAsKnown(params: { wordId: string; tagId?: string }) {
         'POST',
         params.tagId ? { tagId: params.tagId } : {},
     );
+}
+
+/** Badges de l'utilisateur : obtenus et à obtenir, avec la progression. */
+async function getBadges() {
+    return performApiCall<badgesType>('badges', 'GET');
 }
 
 export { api };

@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { AppBar, Button, Container, Toolbar, Typography, styled } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { storage } from '../lib/storage';
@@ -19,6 +20,14 @@ function Layout(props: { children: ReactNode }) {
                             Gabian
                         </Typography>
                     </Brand>
+                    <Button
+                        color="inherit"
+                        component={Link}
+                        to={ROUTE_PATHS.PROFILE}
+                        startIcon={<PersonIcon />}
+                    >
+                        Profil
+                    </Button>
                     <Button color="inherit" startIcon={<LogoutIcon />} onClick={logout}>
                         Déconnexion
                     </Button>

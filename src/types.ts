@@ -54,6 +54,25 @@ type dailySessionType = {
     };
 };
 
+type badgeKindType = 'learned_words' | 'streak_days' | 'languages';
+
+type badgeType = {
+    id: string;
+    kind: badgeKindType;
+    threshold: number;
+    label: string;
+    description: string;
+    /** Progression vers le palier, plafonnée au palier. */
+    current: number;
+    /** Date d'obtention (YYYY-MM-DD), ou null si le badge n'est pas encore obtenu. */
+    earnedOn: string | null;
+};
+
+type badgesType = {
+    progress: { learnedWords: number; streakDays: number; languages: number };
+    badges: badgeType[];
+};
+
 type answerResultType = {
     isCorrect: boolean;
     expectedAnswers: string[];
@@ -65,6 +84,9 @@ type markWordAsKnownResultType = { intervalDays: number; newWords: newWordType[]
 
 export type {
     userType,
+    badgeKindType,
+    badgeType,
+    badgesType,
     directionType,
     tagSummaryType,
     natureType,

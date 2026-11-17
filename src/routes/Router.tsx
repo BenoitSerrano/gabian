@@ -2,6 +2,7 @@ import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { storage } from '../lib/storage';
 import { SignIn, SignUp } from '../pages/Authentication';
 import { Home } from '../pages/Home';
+import { Profile } from '../pages/Profile';
 import { Review } from '../pages/Review';
 import { ROUTE_PATHS } from './routePaths';
 import { useDocumentTitle } from './useDocumentTitle';
@@ -17,6 +18,10 @@ function Router() {
                 <Route
                     path={ROUTE_PATHS.REVIEW}
                     element={<Titled title="Révision" page={<Review />} />}
+                />
+                <Route
+                    path={ROUTE_PATHS.PROFILE}
+                    element={<Titled title="Profil" page={<Profile />} />}
                 />
             </Route>
             <Route element={<AnonymousOnly />}>
