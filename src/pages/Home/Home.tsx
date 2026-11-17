@@ -60,6 +60,7 @@ function Home() {
                                 value={stats.dueTomorrowWordCount}
                                 label="à réviser demain"
                             />
+                            <SmallCounter value={stats.todayPoints} label="points aujourd’hui" />
                         </Stack>
                         {hasWorkToday ? (
                             <Button

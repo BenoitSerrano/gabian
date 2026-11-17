@@ -51,6 +51,8 @@ type dailySessionType = {
         learnedTodayWordCount: number;
         /** Mots distincts à réviser demain, révisions en retard comprises. */
         dueTomorrowWordCount: number;
+        /** Points gagnés aujourd'hui, toutes sessions confondues. */
+        todayPoints: number;
     };
 };
 
@@ -73,8 +75,13 @@ type badgesType = {
     badges: badgeType[];
 };
 
+/** Points gagnés un jour donné (YYYY-MM-DD). */
+type dailyPointsType = { day: string; points: number };
+
 type answerResultType = {
     isCorrect: boolean;
+    /** Points gagnés par cette réponse : 10 × niveau, +5 en sens inverse, 0 si fausse. */
+    points: number;
     expectedAnswers: string[];
     intervalDays: number;
     dueDate: string;
@@ -87,6 +94,7 @@ export type {
     badgeKindType,
     badgeType,
     badgesType,
+    dailyPointsType,
     directionType,
     tagSummaryType,
     natureType,

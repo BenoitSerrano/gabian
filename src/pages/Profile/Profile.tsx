@@ -4,6 +4,7 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import TranslateIcon from '@mui/icons-material/Translate';
 import { useQuery } from '@tanstack/react-query';
 import { Layout } from '../../components/Layout';
+import { PointsChart } from '../../components/PointsChart';
 import { api } from '../../lib/api';
 import { QUERY_KEYS } from '../../lib/queryKeys';
 import { badgeKindType, badgeType } from '../../types';
@@ -19,6 +20,10 @@ const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeZo
 function Profile() {
     const meQuery = useQuery({ queryKey: QUERY_KEYS.me, queryFn: api.getMe });
     const badgesQuery = useQuery({ queryKey: QUERY_KEYS.badges, queryFn: api.getBadges });
+    const pointsQuery = useQuery({
+        queryKey: QUERY_KEYS.dailyPoints,
+        queryFn: api.getDailyPoints,
+    });
 
     return (
         <Layout>
@@ -29,6 +34,19 @@ function Profile() {
                         <Typography color="text.secondary">{meQuery.data.email}</Typography>
                     )}
                 </div>
+
+                <Card sx={{ p: 6 }}>
+                    <Stack spacing={4}>
+                        <Typography variant="h2">Points par jour</Typography>
+                        {pointsQuery.isPending ? (
+                            <CircularProgress size={24} />
+                        ) : pointsQuery.isError ? (
+                            <Typography color="error">Impossible de charger les points.</Typography>
+                        ) : (
+                            <PointsChart data={pointsQuery.data} />
+                        )}
+                    </Stack>
+                </Card>
 
                 {badgesQuery.isPending ? (
                     <Stack alignItems="center">

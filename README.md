@@ -44,7 +44,7 @@ utilisateurs y est rattachée.
 ## Mise en place
 
 1. Créer le projet Supabase `gabian-users` et exécuter dans le SQL Editor `schema.sql`,
-   `words.sql`, `badges.sql`, puis les fichiers de `seed_words_themes/` dans l'ordre (dans `multi-usage-api/src/clients/gabian/lib/supabase/`).
+   `words.sql`, `badges.sql`, `points.sql`, puis les fichiers de `seed_words_themes/` dans l'ordre (dans `multi-usage-api/src/clients/gabian/lib/supabase/`).
 2. Dans le `.env` de multi-usage-api, renseigner `GABIAN_SUPABASE_URL` et
    `GABIAN_SUPABASE_SERVICE_ROLE_KEY` (clé `service_role`, jamais exposée au front).
 3. Ici : `cp .env.example .env.local` et ajuster `VITE_API_BASE_URL` au port de l'API.
