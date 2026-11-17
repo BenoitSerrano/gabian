@@ -55,6 +55,16 @@ function Home() {
                             <Counter value={reviewCards.length} label="à réviser" />
                             <Counter value={newWords.length} label="nouveaux mots" />
                         </Stack>
+                        <Stack direction="row" spacing={8}>
+                            <SmallCounter
+                                value={stats.learnedTodayWordCount}
+                                label="appris aujourd’hui"
+                            />
+                            <SmallCounter
+                                value={stats.dueTomorrowWordCount}
+                                label="à réviser demain"
+                            />
+                        </Stack>
                         {hasWorkToday ? (
                             <Button
                                 variant="contained"
@@ -124,6 +134,19 @@ function Counter(props: { value: number; label: string }) {
                 {props.value}
             </Typography>
             <Typography color="text.secondary">{props.label}</Typography>
+        </div>
+    );
+}
+
+function SmallCounter(props: { value: number; label: string }) {
+    return (
+        <div>
+            <Typography variant="h3" component="p">
+                {props.value}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+                {props.label}
+            </Typography>
         </div>
     );
 }

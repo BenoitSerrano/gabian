@@ -5,9 +5,10 @@ Le serveur est [multi-usage-api](../multi-usage-api) (client `gabian`, routes `/
 
 ## Fonctionnement
 
-Chaque jour, l'utilisateur reçoit :
+À chaque session de révision, l'utilisateur reçoit :
 
-- **5 nouveaux mots** jamais vus : présentés d'abord avec leur traduction, puis interrogés en fin de session ;
+- **5 nouveaux mots** jamais vus (sans limite par jour : chaque nouvelle session en propose 5 autres),
+  des plus faciles aux plus difficiles : présentés d'abord avec leur traduction, puis interrogés en fin de session ;
 - **tous les mots à réviser** ce jour-là (date de révision ≤ aujourd'hui).
 
 Il tape la traduction française (casse, accents et article ignorés) :

@@ -27,7 +27,14 @@ type reviewCardType = wordInfoType & {
 type newWordType = wordInfoType & { id: string; term: string; translations: string[] };
 
 /** Tag (catégorie de vocabulaire) avec son nombre total de mots. */
-type tagSummaryType = { id: string; label: string; icon: string | null; wordCount: number };
+type tagSummaryType = {
+    id: string;
+    label: string;
+    icon: string | null;
+    wordCount: number;
+    /** Mots du tag déjà vus au moins une fois (mots déjà connus compris). */
+    learnedWordCount: number;
+};
 
 type dailySessionType = {
     today: string;
@@ -37,7 +44,14 @@ type dailySessionType = {
     languages: { user: languageType; learned: languageType };
     reviewCards: reviewCardType[];
     newWords: newWordType[];
-    stats: { totalWordCount: number; startedWordCount: number };
+    stats: {
+        totalWordCount: number;
+        startedWordCount: number;
+        /** Mots découverts aujourd'hui avec « C'est noté » (hors mots déjà connus). */
+        learnedTodayWordCount: number;
+        /** Mots distincts à réviser demain, révisions en retard comprises. */
+        dueTomorrowWordCount: number;
+    };
 };
 
 type answerResultType = {

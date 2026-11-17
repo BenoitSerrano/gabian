@@ -1,10 +1,11 @@
-import { Card, CardActionArea, Stack, Typography, styled } from '@mui/material';
+import { Card, CardActionArea, LinearProgress, Stack, Typography, styled } from '@mui/material';
 import { ASSETS_BASE_URL } from '../lib/api/utils';
 import { tagSummaryType } from '../types';
 
-/** Carte d'un tag : icône + nom de la catégorie + nombre de mots. */
+/** Carte d'un tag : icône, nom de la catégorie et progression (mots appris / total). */
 function TagCard(props: { tag: tagSummaryType; onClick: () => void }) {
     const { tag } = props;
+    const progress = tag.wordCount ? (100 * tag.learnedWordCount) / tag.wordCount : 0;
     return (
         <Card variant="outlined" sx={{ height: '100%' }}>
             <CardActionArea onClick={props.onClick} sx={{ height: '100%', p: 4 }}>
@@ -21,9 +22,16 @@ function TagCard(props: { tag: tagSummaryType; onClick: () => void }) {
                     >
                         {tag.label}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        {tag.wordCount} mots
-                    </Typography>
+                    <Stack spacing={1} sx={{ width: '100%' }}>
+                        <LinearProgress
+                            variant="determinate"
+                            value={progress}
+                            aria-label={`Progression : ${tag.label}`}
+                        />
+                        <Typography variant="body2" color="text.secondary">
+                            {tag.learnedWordCount} / {tag.wordCount} mots appris
+                        </Typography>
+                    </Stack>
                 </Stack>
             </CardActionArea>
         </Card>
